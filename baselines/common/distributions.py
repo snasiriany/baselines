@@ -161,7 +161,10 @@ class MultiCategoricalPd(Pd):
     def __init__(self, low, high, flat):
         self.flat = flat
         self.low = tf.constant(low, dtype=tf.int32)
+        print(tf.split(flat, high - low + 1, axis=len(flat.get_shape()) - 1))
+        print(len(tf.split(flat, high - low + 1, axis=len(flat.get_shape()) - 1)))
         self.categoricals = list(map(CategoricalPd, tf.split(flat, high - low + 1, axis=len(flat.get_shape()) - 1)))
+        print(len(self.categoricals))
     def flatparam(self):
         return self.flat
     def mode(self):
@@ -197,6 +200,7 @@ class DiagGaussianPd(Pd):
                + U.sum(self.logstd, axis=-1)
     def kl(self, other):
         assert isinstance(other, DiagGaussianPd)
+        print(self.flat.shape, self.mean, self.std)
         return U.sum(other.logstd - self.logstd + (tf.square(self.std) + tf.square(self.mean - other.mean)) / (2.0 * tf.square(other.std)) - 0.5, axis=-1)
     def entropy(self):
         return U.sum(self.logstd + .5 * np.log(2.0 * np.pi * np.e), axis=-1)
